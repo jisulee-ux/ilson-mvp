@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   MapPin,
@@ -9,13 +9,11 @@ import {
   Filter,
   Star,
   Heart,
-  ChevronDown,
   Building,
-  Calendar,
-  Users,
-  CheckCircle,
-  X
+  X,
+  Loader
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const MVPPlatform = () => {
   const [selectedCategory, setSelectedCategory] = useState('전체');
@@ -24,114 +22,68 @@ const MVPPlatform = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const categories = ['전체', '경비/보안', '청소/미화', '주차관리', '배달/운송', '급식/조리', '사무보조', '시설관리'];
   const distances = ['전체', '1km 이내', '3km 이내', '5km 이내', '10km 이내'];
 
-  const jobs = [
-    {
-      id: 1,
-      title: "아파트 경비원",
-      company: "래미안 푸르지오",
-      location: "서울 강남구 역삼동",
-      distance: "0.8km",
-      salary: "월 220만원",
-      workTime: "주간 (08:00-18:00)",
-      workDays: "주 5일",
-      category: "경비/보안",
-      requirements: "60세 이하, 성실한 분",
-      benefits: ["4대보험", "식사제공", "휴게실"],
-      posted: "오늘",
-      urgent: true,
-      rating: 4.5,
-      reviews: 23
-    },
-    {
-      id: 2,
-      title: "학교 급식 보조",
-      company: "역삼초등학교",
-      location: "서울 강남구 역삼동",
-      distance: "1.2km",
-      salary: "시급 12,000원",
-      workTime: "오전 (09:00-14:00)",
-      workDays: "주 5일 (방학 제외)",
-      category: "급식/조리",
-      requirements: "건강한 분, 위생교육 이수자 우대",
-      benefits: ["4대보험", "중식제공", "방학휴무"],
-      posted: "1일 전",
-      urgent: false,
-      rating: 4.8,
-      reviews: 45
-    },
-    {
-      id: 3,
-      title: "마트 주차관리",
-      company: "이마트 역삼점",
-      location: "서울 강남구 역삼동",
-      distance: "1.5km",
-      salary: "시급 11,000원",
-      workTime: "오후 (14:00-22:00)",
-      workDays: "주 4-5일",
-      category: "주차관리",
-      requirements: "운전면허증 소지자",
-      benefits: ["4대보험", "직원할인", "교통비지원"],
-      posted: "2일 전",
-      urgent: false,
-      rating: 4.2,
-      reviews: 18
-    },
-    {
-      id: 4,
-      title: "오피스 청소원",
-      company: "삼성SDS 빌딩",
-      location: "서울 강남구 삼성동",
-      distance: "2.3km",
-      salary: "월 200만원",
-      workTime: "새벽 (05:00-09:00)",
-      workDays: "주 6일",
-      category: "청소/미화",
-      requirements: "성실하고 꼼꼼한 분",
-      benefits: ["4대보험", "조식제공"],
-      posted: "3일 전",
-      urgent: false,
-      rating: 4.0,
-      reviews: 12
-    },
-    {
-      id: 5,
-      title: "배달 파트너",
-      company: "쿠팡이츠",
-      location: "서울 강남구 일대",
-      distance: "자유",
-      salary: "건당 4,000-8,000원",
-      workTime: "자유 선택",
-      workDays: "자유 선택",
-      category: "배달/운송",
-      requirements: "자차 또는 오토바이 소지",
-      benefits: ["자유근무", "즉시지급", "인센티브"],
-      posted: "상시",
-      urgent: true,
-      rating: 4.3,
-      reviews: 156
-    },
-    {
-      id: 6,
-      title: "사무보조원",
-      company: "강남구청",
-      location: "서울 강남구 삼성동",
-      distance: "2.8km",
-      salary: "월 210만원",
-      workTime: "주간 (09:00-18:00)",
-      workDays: "주 5일",
-      category: "사무보조",
-      requirements: "컴퓨터 기초 가능자",
-      benefits: ["4대보험", "중식제공", "공휴일휴무"],
-      posted: "1주일 전",
-      urgent: false,
-      rating: 4.7,
-      reviews: 34
+  // Supabase에서 일자리 데이터 불러오기
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // DB 컬럼명을 컴포넌트에서 사용하는 형식으로 변환
+      const formattedJobs = data.map(job => ({
+        id: job.id,
+        title: job.title,
+        company: job.company,
+        location: job.location,
+        distance: job.distance,
+        salary: job.salary,
+        workTime: job.work_time,
+        workDays: job.work_days,
+        category: job.category,
+        requirements: job.requirements,
+        benefits: job.benefits || [],
+        posted: getTimeAgo(job.created_at),
+        urgent: job.urgent,
+        rating: 4.5,
+        reviews: Math.floor(Math.random() * 50) + 10
+      }));
+
+      setJobs(formattedJobs);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // 시간 계산 함수
+  const getTimeAgo = (dateString) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) return `${diffMins}분 전`;
+    if (diffHours < 24) return `${diffHours}시간 전`;
+    if (diffDays < 7) return `${diffDays}일 전`;
+    return `${Math.floor(diffDays / 7)}주일 전`;
+  };
 
   const filteredJobs = jobs.filter(job => {
     const matchesCategory = selectedCategory === '전체' || job.category === selectedCategory;
@@ -270,6 +222,16 @@ const MVPPlatform = () => {
         </div>
 
         {/* Job List */}
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader className="w-8 h-8 text-orange-500 animate-spin" />
+            <span className="ml-2 text-gray-600">일자리를 불러오는 중...</span>
+          </div>
+        ) : filteredJobs.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-gray-500">검색 결과가 없습니다.</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredJobs.map(job => (
             <div
@@ -335,6 +297,7 @@ const MVPPlatform = () => {
             </div>
           ))}
         </div>
+        )}
       </main>
 
       {/* Job Detail Modal */}
