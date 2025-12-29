@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   MapPin,
@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 
 const LandingPage = () => {
-  const [activeTab, setActiveTab] = useState('worker');
 
   const features = [
     {
@@ -85,7 +84,7 @@ const LandingPage = () => {
           <div className="hidden md:flex items-center space-x-6">
             <a href="#features" className="text-gray-600 hover:text-orange-500">특징</a>
             <a href="#testimonials" className="text-gray-600 hover:text-orange-500">후기</a>
-            <Link to="/platform" className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition">
+            <Link to="/jobs" className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition">
               시작하기
             </Link>
           </div>
@@ -108,13 +107,13 @@ const LandingPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  to="/platform"
+                  to="/jobs"
                   className="bg-orange-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-orange-600 transition flex items-center justify-center"
                 >
                   일자리 찾기 <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
                 <Link
-                  to="/dashboard"
+                  to="/employer/post"
                   className="border-2 border-orange-500 text-orange-500 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-orange-50 transition flex items-center justify-center"
                 >
                   기업 회원가입
@@ -260,13 +259,13 @@ const LandingPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/platform"
+              to="/jobs"
               className="bg-white text-orange-500 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition"
             >
               일자리 찾기
             </Link>
             <Link
-              to="/dashboard"
+              to="/employer/post"
               className="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-orange-600 transition"
             >
               기업 회원가입
@@ -294,17 +293,17 @@ const LandingPage = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">서비스</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/platform" className="hover:text-orange-500">일자리 찾기</Link></li>
-                <li><Link to="/dashboard" className="hover:text-orange-500">인재 찾기</Link></li>
+                <li><Link to="/jobs" className="hover:text-orange-500">일자리 찾기</Link></li>
+                <li><Link to="/employer/post" className="hover:text-orange-500">인재 찾기</Link></li>
                 <li><Link to="/kakao" className="hover:text-orange-500">알림 서비스</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">고객지원</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-orange-500">자주 묻는 질문</a></li>
-                <li><a href="#" className="hover:text-orange-500">이용약관</a></li>
-                <li><a href="#" className="hover:text-orange-500">개인정보처리방침</a></li>
+                <li><button className="hover:text-orange-500">자주 묻는 질문</button></li>
+                <li><button className="hover:text-orange-500">이용약관</button></li>
+                <li><button className="hover:text-orange-500">개인정보처리방침</button></li>
               </ul>
             </div>
             <div>
@@ -326,9 +325,9 @@ const LandingPage = () => {
       <nav className="fixed bottom-4 right-4 z-50">
         <div className="bg-white rounded-lg shadow-lg p-3 space-y-2">
           <Link to="/" className="block px-4 py-2 hover:bg-gray-100 rounded text-sm font-medium">홈</Link>
-          <Link to="/platform" className="block px-4 py-2 hover:bg-gray-100 rounded text-sm font-medium">플랫폼</Link>
-          <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100 rounded text-sm font-medium">대시보드</Link>
-          <Link to="/kakao" className="block px-4 py-2 hover:bg-gray-100 rounded text-sm font-medium">카톡알림</Link>
+          <Link to="/jobs" className="block px-4 py-2 hover:bg-gray-100 rounded text-sm font-medium">일자리</Link>
+          <Link to="/employer/post" className="block px-4 py-2 hover:bg-gray-100 rounded text-sm font-medium">기업등록</Link>
+          <Link to="/admin/employers" className="block px-4 py-2 hover:bg-gray-100 rounded text-sm font-medium text-orange-600">관리자</Link>
         </div>
       </nav>
     </div>
